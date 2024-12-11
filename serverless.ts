@@ -48,9 +48,9 @@ let config = {
 
 let size = 128
 do {
-  config.functions[`size-${size}`] = {
+  config.functions[`memory${size}ram`] = {
     "handler": "benchmark.handler",
-    "memorySize": 128
+    "memorySize": size
   }
   size *= 2
 } while (size < 10240)
