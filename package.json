@@ -11,11 +11,10 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-  },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.146",
     "@types/node": "^22.10.2",
-    "serverless-esbuild": "^1.54.6"
+    "serverless-esbuild": "^1.54.6",
+    "ts-node": "^10.9.2"
   }
 }
