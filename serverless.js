@@ -10,7 +10,7 @@ let config = {
     "stage": "${opt:stage, \"dev\"}",
     "region": "us-east-2",
     "deploymentBucket": {
-      "name": "deployment-bucket-us-east-2"
+      "name": process.env.BUCKET_NAME
     },
     "iam": {
       "role": {

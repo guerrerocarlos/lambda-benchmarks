@@ -6,6 +6,7 @@ env:
   GIT_REF: "${{ github.ref }}"
   LOG_LEVEL: "WARN"
   BRANCH_REF: "${{ github.ref_name }}"
+  BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
 
 jobs:
   deploy:
