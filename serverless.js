@@ -57,4 +57,4 @@ do {
 
 console.log("config", JSON.stringify(config, null, 2))
 
-export default config
+module.exports = config
