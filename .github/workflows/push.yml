@@ -1,5 +1,4 @@
 name: lambda-benchmarks
-
 on: "push"
 
 env:

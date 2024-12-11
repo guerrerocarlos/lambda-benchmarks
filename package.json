@@ -2,9 +2,11 @@
   "name": "lambda-benchmarks",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "benchmark",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "package": "serverless package",
+    "deploy": "npx serverless@3.30.0 deploy",
+    "remove": "npx serverless@3.30.0 remove"
   },
   "keywords": [],
   "author": "",
