@@ -1,0 +1,45 @@
+name: lambda-benchmarks
+
+on: "push"
+
+env:
+  COMMIT_SHA: "${{ github.sha }}"
+  GIT_REF: "${{ github.ref }}"
+  LOG_LEVEL: "WARN"
+  BRANCH_REF: "${{ github.ref_name }}"
+
+jobs:
+  deploy:
+    timeout-minutes: 5
+    name: "${{ github.workflow }} serverless deploy"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - uses: actions/cache@v4
+        id: node-modules-cache
+        with:
+          key: nodemodules-${{ hashFiles('pnpm-lock.yaml') }}
+          path: "src/node_modules"
+
+      - uses: pnpm/action-setup@v4
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+        with:
+          version: 8
+
+      - name: Install node_modules
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+        run: pnpm install
+
+      - name: Serverless Deploy
+        run: yarn run deploy --stage "$BRANCH_REF"
