@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@aws-sdk/client-lambda": "^3.709.0",
     "@types/aws-lambda": "^8.10.146",
     "@types/node": "^22.10.2",
     "serverless-esbuild": "^1.54.6",

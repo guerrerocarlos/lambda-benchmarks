@@ -9,6 +9,7 @@ let config = {
     "runtime": "nodejs18.x",
     "stage": "${opt:stage, \"dev\"}",
     "region": "us-east-1",
+    "timeout": 900,
     "deploymentBucket": {
       "name": process.env.BUCKET_NAME
     },
@@ -48,12 +49,17 @@ let config = {
 
 let size = 128
 do {
+  let oldSize = size
   config.functions["memory" + size + "ram"] = {
     "handler": "benchmark.handler",
     "memorySize": size
   }
   size *= 2
-} while (size < 10240)
+  config.functions["memory" + ((oldSize + size) / 2) + "ram"] = {
+    "handler": "benchmark.handler",
+    "memorySize": size
+  }
+} while (size <= 10240)
 
 console.log("config", JSON.stringify(config, null, 2))
 
