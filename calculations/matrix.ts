@@ -1,4 +1,4 @@
-export default function matrix(size: number): number[][] {
+export default function matrix(size: number): boolean | number[][] {
   const A: number[][] = Array.from({ length: size }, () => Array.from({ length: size }, () => Math.random()));
   const B: number[][] = Array.from({ length: size }, () => Array.from({ length: size }, () => Math.random()));
   const result: number[][] = Array.from({ length: size }, () => Array(size).fill(0));
@@ -10,7 +10,7 @@ export default function matrix(size: number): number[][] {
           }
       }
   }
-  return result;
+  return true;
 }
 
 if(require.main === module) {

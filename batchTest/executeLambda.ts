@@ -16,9 +16,9 @@ export async function invokeLambda(lambdaName: string, payload: any) {
     InvocationType: "RequestResponse",
     LogType: "None",
   } as InvokeCommandInput;
-  console.log("INVOKING...", params);
+  // console.log("INVOKING...", params);
   const command = new InvokeCommand(params);
-  console.log("INVOKED")
+  // console.log("INVOKED")
   try {
     let response = await lambda.send(command);
     let payloadString = new TextDecoder().decode(response.Payload);
@@ -38,6 +38,12 @@ export async function invokeLambda(lambdaName: string, payload: any) {
 }
 
 if (require.main === module) {
-  invokeLambda("benchmark-dev-memory128ram", { functionName: "pi", n: 100000000 }).then(console.log);
-  invokeLambda("benchmark-dev-memory8192ram", { functionName: "pi", n: 100000000 }).then(console.log);
+  // invokeLambda("benchmark-dev-memory128ram", { functionName: "pi", n: 100000000, ram: 128 }).then(console.log);
+  // invokeLambda("benchmark-dev-memory9216ram", { functionName: "pi", n: 100000000, ram: 9216 }).then(console.log);
+  // invokeLambda("benchmark-dev-memory128ram", { functionName: "fibonacci", n: 40, ram: 128 }).then(console.log);
+  // invokeLambda("benchmark-dev-memory9216ram", { functionName: "fibonacci", n: 40, ram: 9216 }).then(console.log);
+  // invokeLambda("benchmark-dev-memory128ram", { functionName: "integration", n: 1000000000, ram: 128 }).then(console.log);
+  // invokeLambda("benchmark-dev-memory9216ram", { functionName: "integration", n: 1000000000, ram: 9216 }).then(console.log);
+  invokeLambda("benchmark-dev-memory128ram", { functionName: "matrix", n: 1000, ram: 128 }).then(console.log);
+  invokeLambda("benchmark-dev-memory9216ram", { functionName: "matrix", n: 1000, ram: 9216 }).then(console.log);
 }
