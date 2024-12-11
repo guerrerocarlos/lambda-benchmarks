@@ -8,7 +8,7 @@ let config = {
     "name": "aws",
     "runtime": "nodejs18.x",
     "stage": "${opt:stage, \"dev\"}",
-    "region": "us-east-2",
+    "region": "us-east-1",
     "deploymentBucket": {
       "name": process.env.BUCKET_NAME
     },
