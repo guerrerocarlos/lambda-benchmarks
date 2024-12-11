@@ -48,9 +48,13 @@ let config = {
 
 let size = 128
 do {
-  config.functions["memory"+size +"ram"] = {
+  config.functions["memory" + size + "ram"] = {
     "handler": "benchmark.handler",
     "memorySize": size
   }
   size *= 2
 } while (size < 10240)
+
+console.log("config", JSON.stringify(config, null, 2))
+
+export default config
