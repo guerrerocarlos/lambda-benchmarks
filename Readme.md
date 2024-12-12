@@ -1,6 +1,6 @@
-## AWS Lambda Benchmarks
+## AWS Lambda Benchmarks
 
-### AWS Lambda Experimental Performance Results (Dec 2024)
+### AWS Lambda Experimental Performance Results (Dec 2024)
 
 | RAM   | cpuCount | cpuSpeed | cpuModel                                      | pi (ms)   | fibonacci (ms) | integration (ms) | matrix (ms) | prime (ms) |
 |-------|----------|----------|-----------------------------------------------|------|-----------|-------------|--------|-------|
@@ -47,8 +47,8 @@
 
 ## Graphs:
 
-![Multi-threaded Duration vs  RAM (1)](https://gist.github.com/user-attachments/assets/66e0687f-bad9-4dff-9a81-734e62f9e98e)
+  - [Multi-threaded Duration vs  RAM](https://gist.github.com/user-attachments/assets/66e0687f-bad9-4dff-9a81-734e62f9e98e.png)
 
-![Single Threaded Duration VS RAM](https://gist.github.com/user-attachments/assets/7934b7ae-f99e-47f2-8705-520d07bcd05a)
+  - [Single Threaded Duration VS RAM](https://gist.github.com/user-attachments/assets/7934b7ae-f99e-47f2-8705-520d07bcd05a.png)
 
-![SingleThreaded-Cost and MultiThreaded-Cost](https://gist.github.com/user-attachments/assets/fdaf8db4-10f9-4d7b-a613-32ab24df434b)
+  - [SingleThreaded-Cost and MultiThreaded-Cost](https://gist.github.com/user-attachments/assets/fdaf8db4-10f9-4d7b-a613-32ab24df434b.png)
