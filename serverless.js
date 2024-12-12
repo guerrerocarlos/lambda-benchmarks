@@ -48,25 +48,18 @@ let config = {
 }
 
 let size = 128
-let end = false
+config.functions["memory" + size + "ram"] = {
+  "handler": "benchmark.handler",
+  "memorySize": size
+}
+size += 128
 do {
-  let oldSize = size
   config.functions["memory" + size + "ram"] = {
     "handler": "benchmark.handler",
     "memorySize": size
   }
-  size *= 2
-
-  if (size > 10240) {
-    size = 10240
-  }
-
-  config.functions["memory" + ((oldSize + size) / 2) + "ram"] = {
-    "handler": "benchmark.handler",
-    "memorySize": (oldSize + size) / 2
-  }
-
-} while (size < 10240)
+  size += 256
+} while (size <= 10240)
 
 console.log("config", JSON.stringify(config, null, 2))
 
