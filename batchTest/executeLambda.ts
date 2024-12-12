@@ -13,13 +13,10 @@ export async function invokeLambda(lambdaName: string, payload: any): Promise<an
   const params = {
     FunctionName: lambdaName,
     Payload: JSON.stringify(payload),
-    // InvocationType: "Event",
     InvocationType: "RequestResponse",
     LogType: "None",
   } as InvokeCommandInput;
-  // console.log("INVOKING...", params);
   const command = new InvokeCommand(params);
-  // console.log("INVOKED")
   try {
     let response = await lambda.send(command);
     let payloadString = new TextDecoder().decode(response.Payload);
@@ -33,7 +30,7 @@ export async function invokeLambda(lambdaName: string, payload: any): Promise<an
   } catch (err) {
     return {
       statusCode: 404,
-      body: JSON.stringify({ error: "Destination container was not found: " + lambdaName }, null, 2)
+      body: JSON.stringify({ error: "Destination lambda was not found: " + lambdaName }, null, 2)
     }
   }
 }
@@ -43,12 +40,12 @@ if (require.main === module) {
   (async () => {
     if (true) {
 
-      let minRam = (10240 - 512) // 128
+      let minRam = 256
       let ramStep = 256
       let maxRam = 10240
 
       let jsonResults = {} as { [key: string]: any }
-      let jsonCpus = {} as { [key: string]: any }
+
       let nPerFunction = {
         pi: 100000000,
         fibonacci: 40,
@@ -56,9 +53,6 @@ if (require.main === module) {
         matrix: 1000,
         prime: 10000000
       }
-
-      let results = [] as string[]
-      results.push(`functionName,RAM,n,time`)
 
       type BenchmarkPayload = {
         functionName: string,
@@ -69,14 +63,19 @@ if (require.main === module) {
       }
 
       async function processBenchmark(size: number, functionName: string) {
-        console.log("Processing", functionName, size)
-        let invokationResult = await invokeLambda(`benchmark-dev-memory${size}ram`, { functionName, n: nPerFunction[functionName], ram: size }) as BenchmarkPayload
-        fs.writeFileSync(`results/invokationResult-${functionName}-${size}.json`, JSON.stringify(invokationResult, null, 2))
-        results.push(`${invokationResult.functionName},${invokationResult.ram},${invokationResult.n},${invokationResult.time}`)
-        console.log("Completed", `${invokationResult.functionName},${invokationResult.ram},${invokationResult.n},${invokationResult.time}`)
-        jsonResults[invokationResult.ram] = jsonResults[invokationResult.ram] || {}
-        jsonCpus[invokationResult.ram] = jsonCpus[invokationResult.ram] || invokationResult.cpus.length
-        jsonResults[invokationResult.ram][invokationResult.functionName] = invokationResult.time
+        try {
+          console.log("Processing", functionName, size)
+          let invokationResult = await invokeLambda(`benchmark-dev-memory${size}ram`, { functionName, n: nPerFunction[functionName], ram: size }) as BenchmarkPayload
+          fs.writeFileSync(`results/invokationResult-${functionName}-${size}.json`, JSON.stringify(invokationResult, null, 2))
+          console.log("Completed", `${invokationResult.functionName},${invokationResult.ram},${invokationResult.n},${invokationResult.time}`)
+          jsonResults[invokationResult.ram] = jsonResults[invokationResult.ram] || {}
+          jsonResults[invokationResult.ram]["cpuCount"] = invokationResult.cpus?.length || 1
+          jsonResults[invokationResult.ram]["cpuSpeed"] = invokationResult.cpus[0].speed || 1
+          jsonResults[invokationResult.ram]["cpuModel"] = invokationResult.cpus[0].model || ""
+          jsonResults[invokationResult.ram][invokationResult.functionName] = invokationResult.time
+        } catch(err) {
+          console.log("⭕️ invokationResult error", err)
+        }
       }
 
       let promisesWaiting = [] as Promise<any>[]
@@ -92,16 +91,16 @@ if (require.main === module) {
 
       let fullCsv = [] as string[]
 
-      fullCsv.push(`RAM,${Object.keys(nPerFunction).join(",")}`)
+      fullCsv.push(`RAM,cpuCount,cpuSpeed,cpuModel,${Object.keys(nPerFunction).join(",")}`)
 
       for (let ramSize = minRam; ramSize <= maxRam; ramSize += ramStep) {
-        fullCsv.push(`${ramSize},${jsonCpus[ramSize]},${Object.keys(nPerFunction).map((functionName) => jsonResults[ramSize][functionName]).join(",")}`)
+        fullCsv.push(`${ramSize},${jsonResults[ramSize]["cpuCount"]},${jsonResults[ramSize]["cpuSpeed"]},${jsonResults[ramSize]["cpuModel"]},${Object.keys(nPerFunction).map((functionName) => jsonResults[ramSize][functionName]).join(",")}`)
       }
 
       fs.writeFileSync(`results-full.csv`, fullCsv.join("\n"))
     } else {
       // invokeLambda("benchmark-dev-memory128ram", { functionName: "pi", n: 100000000, ram: 128 }).then(console.log);
-      invokeLambda("benchmark-dev-memory9216ram", { functionName: "pi", n: 100000000, ram: 9216 }).then(console.log);
+      // invokeLambda("benchmark-dev-memory9216ram", { functionName: "pi", n: 100000000, ram: 9216 }).then(console.log);
       // invokeLambda("benchmark-dev-memory128ram", { functionName: "fibonacci", n: 40, ram: 128 }).then(console.log);
       // invokeLambda("benchmark-dev-memory9216ram", { functionName: "fibonacci", n: 40, ram: 9216 }).then(console.log);
       // invokeLambda("benchmark-dev-memory128ram", { functionName: "integration", n: 1000000000, ram: 128 }).then(console.log);

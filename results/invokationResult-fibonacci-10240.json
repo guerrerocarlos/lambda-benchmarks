@@ -1,7 +1,0 @@
-{
-  "functionName": "fibonacci",
-  "n": 40,
-  "ram": 10240,
-  "result": 102334155,
-  "time": 1548
-}
