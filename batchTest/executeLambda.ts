@@ -38,67 +38,79 @@ export async function invokeLambda(lambdaName: string, payload: any): Promise<an
   }
 }
 
+
 if (require.main === module) {
   (async () => {
-    let nPerFunction = {
-      pi: 100000000,
-      fibonacci: 40,
-      integration: 1000000000,
-      matrix: 1000,
-      prime: 10000000
-    }
+    if (true) {
 
-    let results = [] as string[]
-    results.push(`functionName,RAM,n,time`)
+      let minRam = (10240 - 512) // 128
+      let ramStep = 256
+      let maxRam = 10240
 
-    type BenchmarkPayload = {
-      functionName: string,
-      ram: number,
-      n: number,
-      time?: number
-    }
+      let jsonResults = {} as { [key: string]: any }
+      let jsonCpus = {} as { [key: string]: any }
+      let nPerFunction = {
+        pi: 100000000,
+        fibonacci: 40,
+        integration: 1000000000,
+        matrix: 1000,
+        prime: 10000000
+      }
 
-    async function processBenchmark(size: number, functionName: string) {
-      console.log("Processing", functionName, size)
-      let invokationResult = await invokeLambda(`benchmark-dev-memory${size}ram`, { functionName, n: nPerFunction[functionName], ram: size }) as BenchmarkPayload
-      results.push(`${invokationResult.functionName},${invokationResult.ram},${invokationResult.n},${invokationResult.time}`)
-      console.log("Completed", `${invokationResult.functionName},${invokationResult.ram},${invokationResult.n},${invokationResult.time}`)
+      let results = [] as string[]
+      results.push(`functionName,RAM,n,time`)
 
-    }
+      type BenchmarkPayload = {
+        functionName: string,
+        ram: number,
+        n: number,
+        time?: number,
+        cpus: any[]
+      }
 
-    for (let functionName in nPerFunction) {
-      let n = nPerFunction[functionName]
+      async function processBenchmark(size: number, functionName: string) {
+        console.log("Processing", functionName, size)
+        let invokationResult = await invokeLambda(`benchmark-dev-memory${size}ram`, { functionName, n: nPerFunction[functionName], ram: size }) as BenchmarkPayload
+        fs.writeFileSync(`results/invokationResult-${functionName}-${size}.json`, JSON.stringify(invokationResult, null, 2))
+        results.push(`${invokationResult.functionName},${invokationResult.ram},${invokationResult.n},${invokationResult.time}`)
+        console.log("Completed", `${invokationResult.functionName},${invokationResult.ram},${invokationResult.n},${invokationResult.time}`)
+        jsonResults[invokationResult.ram] = jsonResults[invokationResult.ram] || {}
+        jsonCpus[invokationResult.ram] = jsonCpus[invokationResult.ram] || invokationResult.cpus.length
+        jsonResults[invokationResult.ram][invokationResult.functionName] = invokationResult.time
+      }
+
       let promisesWaiting = [] as Promise<any>[]
+      for (let functionName in nPerFunction) {
 
-      let size = 128
-
-      do {
-        let oldSize = size
-
-        promisesWaiting.push(processBenchmark(size, functionName))
-
-        size *= 2
-
-        if (size > 10240) {
-          size = 10240
+        for (let ramSize = minRam; ramSize <= maxRam; ramSize += ramStep) {
+          promisesWaiting.push(processBenchmark(ramSize, functionName))
         }
 
-        promisesWaiting.push(processBenchmark((oldSize + size) / 2, functionName))
-
-      } while (size < 10240)
-
+        // fs.writeFileSync(`results-${functionName}.csv`, results.join("\n"))
+      }
       await Promise.all(promisesWaiting)
-      fs.writeFileSync(`results-${functionName}.csv`, results.join("\n"))
+
+      let fullCsv = [] as string[]
+
+      fullCsv.push(`RAM,${Object.keys(nPerFunction).join(",")}`)
+
+      for (let ramSize = minRam; ramSize <= maxRam; ramSize += ramStep) {
+        fullCsv.push(`${ramSize},${jsonCpus[ramSize]},${Object.keys(nPerFunction).map((functionName) => jsonResults[ramSize][functionName]).join(",")}`)
+      }
+
+      fs.writeFileSync(`results-full.csv`, fullCsv.join("\n"))
+    } else {
+      // invokeLambda("benchmark-dev-memory128ram", { functionName: "pi", n: 100000000, ram: 128 }).then(console.log);
+      invokeLambda("benchmark-dev-memory9216ram", { functionName: "pi", n: 100000000, ram: 9216 }).then(console.log);
+      // invokeLambda("benchmark-dev-memory128ram", { functionName: "fibonacci", n: 40, ram: 128 }).then(console.log);
+      // invokeLambda("benchmark-dev-memory9216ram", { functionName: "fibonacci", n: 40, ram: 9216 }).then(console.log);
+      // invokeLambda("benchmark-dev-memory128ram", { functionName: "integration", n: 1000000000, ram: 128 }).then(console.log);
+      // invokeLambda("benchmark-dev-memory9216ram", { functionName: "integration", n: 1000000000, ram: 9216 }).then(console.log);
+      // invokeLambda("benchmark-dev-memory128ram", { functionName: "matrix", n: 1000, ram: 128 }).then(console.log);
+      // invokeLambda("benchmark-dev-memory9216ram", { functionName: "matrix", n: 1000, ram: 9216 }).then(console.log);
+      // invokeLambda("benchmark-dev-memory128ram", { functionName: "prime", n: 10000000, ram: 128 }).then(console.log);
+      // invokeLambda("benchmark-dev-memory9216ram", { functionName: "prime", n: 10000000, ram: 9216 }).then(console.log);
     }
-    // invokeLambda("benchmark-dev-memory128ram", { functionName: "pi", n: 100000000, ram: 128 }).then(console.log);
-    // invokeLambda("benchmark-dev-memory9216ram", { functionName: "pi", n: 100000000, ram: 9216 }).then(console.log);
-    // invokeLambda("benchmark-dev-memory128ram", { functionName: "fibonacci", n: 40, ram: 128 }).then(console.log);
-    // invokeLambda("benchmark-dev-memory9216ram", { functionName: "fibonacci", n: 40, ram: 9216 }).then(console.log);
-    // invokeLambda("benchmark-dev-memory128ram", { functionName: "integration", n: 1000000000, ram: 128 }).then(console.log);
-    // invokeLambda("benchmark-dev-memory9216ram", { functionName: "integration", n: 1000000000, ram: 9216 }).then(console.log);
-    // invokeLambda("benchmark-dev-memory128ram", { functionName: "matrix", n: 1000, ram: 128 }).then(console.log);
-    // invokeLambda("benchmark-dev-memory9216ram", { functionName: "matrix", n: 1000, ram: 9216 }).then(console.log);
-    // invokeLambda("benchmark-dev-memory128ram", { functionName: "prime", n: 10000000, ram: 128 }).then(console.log);
-    // invokeLambda("benchmark-dev-memory9216ram", { functionName: "prime", n: 10000000, ram: 9216 }).then(console.log);
+
   })()
 }
