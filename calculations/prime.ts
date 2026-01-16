@@ -15,7 +15,7 @@ export default function prime(limit: number): number[] {
   return primes;
 }
 
-if(require.main === module) {
+if (typeof require !== "undefined" && typeof module !== "undefined" && require.main === module) {
   let initTime = new Date().getTime()
   console.log(prime(100000000))
   console.log(`Time taken: ${new Date().getTime() - initTime}ms`)

@@ -13,7 +13,7 @@ export default function matrix(size: number): boolean | number[][] {
   return true;
 }
 
-if(require.main === module) {
+if (typeof require !== "undefined" && typeof module !== "undefined" && require.main === module) {
   let initTime = new Date().getTime()
   console.log(matrix(1000))
   console.log(`Time taken: ${new Date().getTime() - initTime}ms`)

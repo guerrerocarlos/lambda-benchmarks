@@ -5,7 +5,7 @@ export default function fibonacci(n: number): number {
     return fibonacci(n - 1) + fibonacci(n - 2);
 }
 
-if(require.main === module) {
+if (typeof require !== "undefined" && typeof module !== "undefined" && require.main === module) {
     let initTime = new Date().getTime()
     console.log(fibonacci(40))
     console.log(`Time taken: ${new Date().getTime() - initTime}ms`)

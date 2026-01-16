@@ -1,4 +1,4 @@
-name: lambda-benchmarks
+name: Deploy to AWS Lambda
 on: "push"
 
 env:

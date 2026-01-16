@@ -26,6 +26,6 @@ export async function handler(event: any, context?: Context) {
   }
 }
 
-if(require.main === module) {
+if (typeof require !== "undefined" && typeof module !== "undefined" && require.main === module) {
   handler({ functionName: "pi", n: 100000000, ram: 9216 }).then((res) => console.log(JSON.stringify(res, null, 2)))
 }

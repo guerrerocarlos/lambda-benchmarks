@@ -1,5 +1,21 @@
 ## AWS Lambda Benchmarks
 
+## Cloudflare Worker
+
+`cloudflare-worker.ts` runs the same benchmark logic in a Cloudflare Worker. It accepts JSON bodies or query params.
+Run locally with `wrangler dev`.
+
+Example (query string):
+`GET /?functionName=pi&n=100000000`
+
+Example (JSON):
+```json
+{
+  "functionName": "pi",
+  "n": 100000000
+}
+```
+
 ### AWS Lambda Experimental Performance Results (Dec 2024)
 
 | RAM   | cpuCount | cpuSpeed | cpuModel                                      | pi (ms)   | fibonacci (ms) | integration (ms) | matrix (ms) | prime (ms) |

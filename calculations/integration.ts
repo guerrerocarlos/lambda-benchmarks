@@ -12,7 +12,7 @@ export default function integration(n: number) {
   return integrationBenchmark(Math.sin, 0, Math.PI, 1000000000)
 }
 
-if(require.main === module) {
+if (typeof require !== "undefined" && typeof module !== "undefined" && require.main === module) {
   let initTime = new Date().getTime()
   console.log(integration(1000000000))
   console.log(`Time taken: ${new Date().getTime() - initTime}ms`)
