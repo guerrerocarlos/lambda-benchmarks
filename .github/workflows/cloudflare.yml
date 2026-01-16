@@ -1,9 +1,5 @@
-name: Deploy to Cloudflare Workers
-
-on:
-  push:
-    branches:
-      - main
+name: Deploy to AWS Lambda
+on: "push"
 
 jobs:
   deploy:

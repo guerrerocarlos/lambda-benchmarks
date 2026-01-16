@@ -5,6 +5,8 @@
 `cloudflare-worker.ts` runs the same benchmark logic in a Cloudflare Worker. It accepts JSON bodies or query params.
 Run locally with `wrangler dev`.
 
+Batch trigger script: `batchTest/executeCloudflare.ts` (expects `CF_BENCHMARK_URL`).
+
 Example (query string):
 `GET /?functionName=pi&n=100000000`
 
